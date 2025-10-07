@@ -1,6 +1,7 @@
 package com.javaweb.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.javaweb.customexception.FieldRequireException;
 import com.javaweb.modal.BuildingDTO;
 import com.javaweb.service.BuildingService;
 
@@ -21,18 +21,17 @@ public class BuildingAPI {
 	private BuildingService buildingService;
 	
 	@GetMapping(value="/api/building/")
-	public List<BuildingDTO> getBuilding(@RequestParam(name="name", required = false) String name,
-										@RequestParam(name="districtid", required = false) Long districtid,
+	public List<BuildingDTO> getBuilding(@RequestParam Map<String,Object> params,
 										@RequestParam(name="typeCode", required = false) List<String> typeCode) {
-		List<BuildingDTO> res = buildingService.findAll(name, districtid);
+		List<BuildingDTO> res = buildingService.findAll(params, typeCode);
 		return res;
 	}
 	
-	public void validate(BuildingDTO buildingDTO) {
-		if (buildingDTO.getName() == null || buildingDTO.getName().equals("") || buildingDTO.getNumberOfBasement() == null) {
-			throw new FieldRequireException("Name or numberOfBasement is null");
-		}
-	}
+//	public void validate(BuildingDTO buildingDTO) {
+//		if (buildingDTO.getName() == null || buildingDTO.getName().equals("") || buildingDTO.getNumberOfBasement() == null) {
+//			throw new FieldRequireException("Name or numberOfBasement is null");
+//		}
+//	}
 	
 	@PostMapping(value = "/api/building/")
 	public void getBuilding2(@RequestBody BuildingDTO buildingDTO) {
