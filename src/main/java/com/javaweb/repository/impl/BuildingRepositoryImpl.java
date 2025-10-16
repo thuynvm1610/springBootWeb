@@ -13,8 +13,6 @@ import com.javaweb.builder.BuildingSearchBuilder;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.utils.ConnectionJDBCUtil;
-import com.javaweb.utils.NumberUtil;
-import com.javaweb.utils.StringUtil;
 
 
 @Repository
