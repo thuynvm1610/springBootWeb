@@ -1,12 +1,19 @@
 package com.javaweb.modal;
 
 public class BuildingRequestDTO {
+	private Long id;
 	private String name;
 	private String ward;
 	private String street;
 	private Long districtId;
 	private Long rentPrice;
 	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public Long getDistrictId() {
 		return districtId;
 	}

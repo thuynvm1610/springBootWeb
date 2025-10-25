@@ -1,24 +1,26 @@
-package com.javaweb.repository.impl;
+package com.javaweb.repository.custom.impl;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
 import com.javaweb.builder.BuildingSearchBuilder;
-import com.javaweb.repository.BuildingRepository;
+import com.javaweb.repository.custom.BuildingRepositoryCustom;
 import com.javaweb.repository.entity.BuildingEntity;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+
 @Repository
+@Primary
 @PropertySource("classpath:application-uat.properties")
-public class JDBCBuildingRepositoryImpl implements BuildingRepository {
+public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 	
 	@Value("${spring.datasource.url}")
 	private String DB_URL;
@@ -28,6 +30,9 @@ public class JDBCBuildingRepositoryImpl implements BuildingRepository {
 	
 	@Value("${spring.datasource.password}")
 	private String PASS;
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 	
 	public static void joinTable(BuildingSearchBuilder buildingSearchBuilder, StringBuilder sql) {
 		Long staffId = buildingSearchBuilder.getStaffId();
@@ -111,29 +116,31 @@ public class JDBCBuildingRepositoryImpl implements BuildingRepository {
 		where.append("GROUP BY b.id");
 		sql.append(where);
 		System.out.println(sql);
-		List<BuildingEntity> res = new ArrayList<>();
-		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql.toString());
-			while(rs.next()) {
-				BuildingEntity buildingEntity = new BuildingEntity();
-				buildingEntity.setId(rs.getLong("id"));	
-				buildingEntity.setName(rs.getString("name"));
-				buildingEntity.setWard(rs.getString("ward")); 	
+//		List<BuildingEntity> res = new ArrayList<>();
+//		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+//			Statement stmt = conn.createStatement();
+//			ResultSet rs = stmt.executeQuery(sql.toString());
+//			while(rs.next()) {
+//				BuildingEntity buildingEntity = new BuildingEntity();
+//				buildingEntity.setId(rs.getLong("id"));	
+//				buildingEntity.setName(rs.getString("name"));
+//				buildingEntity.setWard(rs.getString("ward")); 	
 //				buildingEntity.setDistrictid(rs.getLong("districtid")); 	
-				buildingEntity.setStreet(rs.getString("street")); 	
+//				buildingEntity.setStreet(rs.getString("street")); 	
 //				buildingEntity.setFloorArea(rs.getLong("floorarea")); 	
-				buildingEntity.setRentPrice(rs.getLong("rentprice")); 	
+//				buildingEntity.setRentPrice(rs.getLong("rentprice")); 	
 //				buildingEntity.setServiceFee(rs.getString("servicefee")); 	
 //				buildingEntity.setBrokerageFee(rs.getLong("brokeragefee")); 	
-				buildingEntity.setManagerName(rs.getString("managername")); 	
-				buildingEntity.setManagerPhoneNumber(rs.getString("managerphonenumber")); 	
-				res.add(buildingEntity);
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return res;
+//				buildingEntity.setManagerName(rs.getString("managername")); 	
+//				buildingEntity.setManagerPhoneNumber(rs.getString("managerphonenumber")); 	
+//				res.add(buildingEntity);
+//			}
+//		} catch (Exception e) {
+//			System.out.println(e.getMessage());
+//		}
+//		return res;
+		Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
+		return query.getResultList();
 	}
 	
 }

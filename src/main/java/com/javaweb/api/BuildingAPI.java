@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.javaweb.modal.BuildingDTO;
 import com.javaweb.modal.BuildingRequestDTO;
+import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.repository.entity.DistrictEntity;
 import com.javaweb.service.BuildingService;
@@ -28,6 +29,9 @@ import jakarta.transaction.Transactional;
 public class BuildingAPI {
 	@Autowired
 	private BuildingService buildingService;
+	
+	@Autowired
+	private BuildingRepository buildingRepository;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -48,14 +52,13 @@ public class BuildingAPI {
 		DistrictEntity districtEntity = new DistrictEntity();
 		districtEntity.setId(buildingRequestDTO.getDistrictId());
 		buildingEntity.setDistrict(districtEntity);
-		entityManager.persist(buildingEntity);
+		buildingRepository.save(buildingEntity);
 		System.out.println("ok");
 	}
 	
 	@PutMapping(value = "/api/building/")
 	public void updateBuilding(@RequestBody BuildingRequestDTO buildingRequestDTO) {
-		BuildingEntity buildingEntity = new BuildingEntity();
-		buildingEntity.setId(2L);
+		BuildingEntity buildingEntity = buildingRepository.findById(buildingRequestDTO.getId()).get();
 		buildingEntity.setName(buildingRequestDTO.getName());
 		buildingEntity.setWard(buildingRequestDTO.getWard());
 		buildingEntity.setStreet(buildingRequestDTO.getStreet());
@@ -66,9 +69,16 @@ public class BuildingAPI {
 		System.out.println("ok");
 	}
 	
-	@DeleteMapping(value = "/api/building/{id}")
-	public void deleteBuilding(@PathVariable Long id) {
-		BuildingEntity buildingEntity = entityManager.find(BuildingEntity.class, id);
-		entityManager.remove(buildingEntity);
+	@GetMapping(value = "/api/building/{name}/{street}")
+	public BuildingDTO getBuildingById(@PathVariable String name, @PathVariable String street) {
+		BuildingDTO result = new BuildingDTO();
+		List<BuildingEntity> buildings = buildingRepository.findByNameContainingAndStreet(name, street);
+		return result;
 	}
+	
+	@DeleteMapping(value = "/api/building/{ids}")
+	public void deleteBuildingById(@PathVariable Long[] ids) {
+		buildingRepository.deleteByIdIn(ids);
+	}
+	
 }
