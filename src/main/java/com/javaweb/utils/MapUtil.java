@@ -7,13 +7,13 @@ public class MapUtil {
 		Object obj = params.getOrDefault(key, null);
 		if(obj != null) {
 			if(tClass.getTypeName().equals("java.lang.Long")) {
-				obj = obj != "" ? Long.valueOf(obj.toString()) : null;
+				obj = Long.valueOf(obj.toString());
 			}
 			else if(tClass.getTypeName().equals("java.lang.Integer")) {
-				obj = obj != "" ? Integer.valueOf(obj.toString()) : null;
+				obj = Integer.valueOf(obj.toString());
 			}
 			else if(tClass.getTypeName().equals("java.lang.String")) {
-				obj = obj.toString();
+				obj = obj != "" ? obj.toString() : null;
 			}
 			return tClass.cast(obj);
 		}
