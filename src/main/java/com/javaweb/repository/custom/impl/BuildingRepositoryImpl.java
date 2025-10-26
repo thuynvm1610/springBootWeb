@@ -4,9 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
 import com.javaweb.builder.BuildingSearchBuilder;
@@ -19,17 +17,7 @@ import jakarta.persistence.Query;
 
 @Repository
 @Primary
-@PropertySource("classpath:application-uat.properties")
 public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
-	
-	@Value("${spring.datasource.url}")
-	private String DB_URL;
-	
-	@Value("${spring.datasource.username}")
-	private String USER;
-	
-	@Value("${spring.datasource.password}")
-	private String PASS;
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -116,29 +104,6 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 		where.append("GROUP BY b.id");
 		sql.append(where);
 		System.out.println(sql);
-//		List<BuildingEntity> res = new ArrayList<>();
-//		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
-//			Statement stmt = conn.createStatement();
-//			ResultSet rs = stmt.executeQuery(sql.toString());
-//			while(rs.next()) {
-//				BuildingEntity buildingEntity = new BuildingEntity();
-//				buildingEntity.setId(rs.getLong("id"));	
-//				buildingEntity.setName(rs.getString("name"));
-//				buildingEntity.setWard(rs.getString("ward")); 	
-//				buildingEntity.setDistrictid(rs.getLong("districtid")); 	
-//				buildingEntity.setStreet(rs.getString("street")); 	
-//				buildingEntity.setFloorArea(rs.getLong("floorarea")); 	
-//				buildingEntity.setRentPrice(rs.getLong("rentprice")); 	
-//				buildingEntity.setServiceFee(rs.getString("servicefee")); 	
-//				buildingEntity.setBrokerageFee(rs.getLong("brokeragefee")); 	
-//				buildingEntity.setManagerName(rs.getString("managername")); 	
-//				buildingEntity.setManagerPhoneNumber(rs.getString("managerphonenumber")); 	
-//				res.add(buildingEntity);
-//			}
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage());
-//		}
-//		return res;
 		Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
 		return query.getResultList();
 	}
